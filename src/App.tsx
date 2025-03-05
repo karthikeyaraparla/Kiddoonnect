@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import ChildDetail from "./pages/ChildDetail";
 import MedicalRecords from "./pages/MedicalRecords";
 import Activities from "./pages/Activities";
 import Settings from "./pages/Settings";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -31,10 +31,11 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             {/* Auth Routes */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            
+
             {/* Parent Routes */}
             <Route path="/dashboard" element={<ParentDashboard />} />
             <Route path="/children" element={<ChildProfiles />} />
@@ -42,14 +43,14 @@ const App = () => (
             <Route path="/medical-records" element={<MedicalRecords />} />
             <Route path="/activities" element={<Activities />} />
             <Route path="/settings" element={<Settings />} />
-            
+
             {/* Hospital Routes */}
             <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
             <Route path="/add-record" element={<AddRecord />} />
-            
+
             {/* Redirects */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            
+            {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
