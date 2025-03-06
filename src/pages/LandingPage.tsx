@@ -50,7 +50,7 @@ const LandingPage = () => {
                     transition={{ duration: 0.8 }}
                 >
                     <h1 className="text-8xl font-thin text-black mb-6 tracking-tighter">
-                        Connecting Parents to What Matters Most!
+                        Connecting <span className="text-[#B592F4]">Parents</span> to What Matters Most!
                     </h1>
                     <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
                         Empowering parents and healthcare providers with seamless child health record management

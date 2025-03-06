@@ -16,12 +16,12 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
-  
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
-  
+
   const isActive = (path: string) => location.pathname === path;
-  
+
   const navigationItems = [
     { icon: Home, label: "Dashboard", path: userType === "parent" ? "/dashboard" : "/hospital-dashboard" },
     { icon: User, label: "Child Profiles", path: "/children", parentOnly: true },
@@ -31,7 +31,7 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
   ].filter(item => userType === "hospital" ? !item.parentOnly : true);
 
   const userBgColor = userType === "parent" ? "child-gradient" : "hospital-gradient";
-  
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar for desktop */}
@@ -46,10 +46,9 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
           >
             <div className="p-4 flex items-center justify-between border-b">
               <Link to={userType === "parent" ? "/dashboard" : "/hospital-dashboard"} className="flex items-center space-x-2">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${userBgColor} text-white font-bold text-xl`}>
-                  CC
+                <div className={`w-50 h-10 rounded-full flex items-center justify-center  text-white font-bold text-xl`}>
+                  <img src="https://res.cloudinary.com/diwdkifv7/image/upload/v1741210986/kc_lmhfm3.png" alt="Logo" className="h-9" />
                 </div>
-                <span className="font-semibold text-xl">Child Connect</span>
               </Link>
               {isMobile && (
                 <Button variant="ghost" size="icon" onClick={closeMenu}>
@@ -57,18 +56,17 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
                 </Button>
               )}
             </div>
-            
+
             <div className="overflow-y-auto flex-1 py-4">
               <nav className="space-y-1 px-2">
                 {navigationItems.map((item) => (
-                  <Link 
-                    key={item.path} 
+                  <Link
+                    key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-smooth ${
-                      isActive(item.path) 
-                        ? `bg-primary text-primary-foreground` 
-                        : `hover:bg-muted text-muted-foreground hover:text-foreground`
-                    }`}
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-smooth ${isActive(item.path)
+                      ? `bg-primary text-primary-foreground`
+                      : `hover:bg-muted text-muted-foreground hover:text-foreground`
+                      }`}
                     onClick={isMobile ? closeMenu : undefined}
                   >
                     <item.icon size={18} />
@@ -77,7 +75,7 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
                 ))}
               </nav>
             </div>
-            
+
             <div className="p-4 border-t">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -106,7 +104,7 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
           </motion.aside>
         )}
       </AnimatePresence>
-      
+
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         <header className="h-16 border-b flex items-center px-4 bg-card/80 backdrop-blur-sm sticky top-0 z-10">
@@ -119,7 +117,7 @@ export const AppLayout = ({ children, userType }: AppLayoutProps) => {
             {userType === "parent" ? "Parent Portal" : "Hospital Portal"}
           </div>
         </header>
-        
+
         <main className="flex-1 p-4 md:p-6 overflow-auto">
           {children}
         </main>
