@@ -1,9 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Spline from '@splinetool/react-spline';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const aboutRef = useRef(null);
+    const testimonialsRef = useRef(null);
+    const contactRef = useRef(null);
+
+    const isAboutInView = useInView(aboutRef, { once: true, margin: "-100px" });
+    const isTestimonialsInView = useInView(testimonialsRef, { once: true, margin: "-100px" });
+    const isContactInView = useInView(contactRef, { once: true, margin: "-100px" });
 
     return (
         <div className="min-h-screen bg-gradient-to-br bg-white">
@@ -40,7 +49,6 @@ const LandingPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-
                     <h1 className="text-8xl font-thin text-black mb-6 tracking-tighter">
                         Connecting Parents to What Matters Most!
                     </h1>
@@ -57,9 +65,14 @@ const LandingPage = () => {
             </section>
 
             {/* About Section */}
-            <section className="py-20 bg-white" id="about">
-                <div className="max-w-6xl mx-auto px-4">
-                    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 ">Why Choose Us?</h2>
+            <section className="py-20 bg-white" id="about" ref={aboutRef}>
+                <motion.div
+                    className="max-w-6xl mx-auto px-4"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={isAboutInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Why Choose Us?</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
                             {
@@ -75,18 +88,65 @@ const LandingPage = () => {
                                 description: "Seamless collaboration with healthcare providers"
                             }
                         ].map((feature, index) => (
-                            <div key={index} className="p-9 rounded-3xl border-2 border-[#B592F4]">
-                                <h3 className="text-xl font-semibold mb-3 text-[#B592F4]">{feature.title}</h3>
-                                <p className="text-gray-600">{feature.description}</p>
-                            </div>
+                            <motion.div
+                                key={index}
+                                className="p-9 rounded-3xl border-2 border-[#B592F4] relative"
+                                initial={{
+                                    opacity: 0,
+                                    y: 30,
+                                    rotateX: -90,
+                                    perspective: 1000
+                                }}
+                                animate={isAboutInView ? {
+                                    opacity: 1,
+                                    y: 0,
+                                    rotateX: 0
+                                } : {
+                                    opacity: 0,
+                                    y: 30,
+                                    rotateX: -90
+                                }}
+                                transition={{
+                                    duration: 0.8,
+                                    delay: index * 0.2,
+                                    type: "spring",
+                                    stiffness: 100
+                                }}
+                                whileHover={{
+                                    rotateY: 10,
+                                    scale: 1.05,
+                                    boxShadow: "0 20px 25px -5px rgba(181, 146, 244, 0.2), 0 10px 10px -5px rgba(181, 146, 244, 0.08)",
+                                }}
+                                style={{
+                                    transformStyle: "preserve-3d",
+                                }}
+                            >
+                                <motion.h3
+                                    className="text-xl font-semibold mb-3 text-[#B592F4]"
+                                    whileHover={{ color: "#9B6EE9" }}
+                                >
+                                    {feature.title}
+                                </motion.h3>
+                                <motion.p
+                                    className="text-gray-600"
+                                    whileHover={{ color: "#4B5563" }}
+                                >
+                                    {feature.description}
+                                </motion.p>
+                            </motion.div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Testimonials */}
-            <section className="py-20 bg-[#E3EDFE]" id="testimonials">
-                <div className="max-w-6xl mx-auto px-4">
+            <section className="py-20 bg-[#E3EDFE]" id="testimonials" ref={testimonialsRef}>
+                <motion.div
+                    className="max-w-6xl mx-auto px-4"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={isTestimonialsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                    transition={{ duration: 0.8 }}
+                >
                     <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">What Parents Say</h2>
                     <div className="grid md:grid-cols-2 gap-8">
                         {[
@@ -101,34 +161,97 @@ const LandingPage = () => {
                                 role: "Parent of 3"
                             }
                         ].map((testimonial, index) => (
-                            <div key={index} className="p-8 bg-white rounded-3xl shadow-sm ">
-                                <p className="text-gray-600 mb-4">"{testimonial.quote}"</p>
-                                <p className="font-semibold text-[#B592F4]">{testimonial.author}</p>
-                                <p className="text-sm text-gray-500">{testimonial.role}</p>
-                            </div>
+                            <motion.div
+                                key={index}
+                                className="p-8 bg-white rounded-3xl shadow-sm relative overflow-hidden"
+                                initial={{ opacity: 0, x: index === 0 ? -50 : 50 }}
+                                animate={isTestimonialsInView ? { opacity: 1, x: 0 } : { opacity: 0, x: index === 0 ? -50 : 50 }}
+                                transition={{ duration: 0.5, delay: index * 0.2 }}
+                                whileHover={{
+                                    scale: 1.05,
+                                    boxShadow: "0 20px 25px -5px rgba(181, 146, 244, 0.2), 0 10px 10px -5px rgba(181, 146, 244, 0.08)",
+                                    y: -10
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                {/* Decorative quote mark */}
+                                <motion.div
+                                    className="absolute top-4 left-4 text-[#B592F4] opacity-20 text-6xl font-serif"
+                                    initial={{ opacity: 0.2 }}
+                                    whileHover={{ opacity: 0.3, scale: 1.1 }}
+                                >
+                                    "
+                                </motion.div>
+
+                                <motion.p
+                                    className="text-gray-600 mb-4 relative z-10"
+                                    whileHover={{ color: "#4B5563" }}
+                                >
+                                    "{testimonial.quote}"
+                                </motion.p>
+
+                                <motion.div
+                                    className="relative z-10"
+                                    whileHover={{ x: 10 }}
+                                >
+                                    <motion.p
+                                        className="font-semibold text-[#B592F4]"
+                                        whileHover={{ color: "#9B6EE9" }}
+                                    >
+                                        {testimonial.author}
+                                    </motion.p>
+                                    <motion.p
+                                        className="text-sm text-gray-500"
+                                        whileHover={{ color: "#6B7280" }}
+                                    >
+                                        {testimonial.role}
+                                    </motion.p>
+                                </motion.div>
+
+                                {/* Hover effect background */}
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-br from-[#B592F4]/5 to-transparent opacity-0"
+                                    whileHover={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                />
+                            </motion.div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Contact Section */}
-            <section className="py-20 bg-white" id="contact">
-                <div className="max-w-4xl mx-auto px-4 text-center">
+            <section className="py-20 bg-white" id="contact" ref={contactRef}>
+                <motion.div
+                    className="max-w-4xl mx-auto px-4 text-center"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={isContactInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                    transition={{ duration: 0.8 }}
+                >
                     <h2 className="text-3xl font-bold mb-8 text-gray-800">Get in Touch</h2>
                     <p className="text-gray-600 mb-8">
                         Have questions? We're here to help!
                     </p>
                     <div className="flex justify-center space-x-6">
-                        <a href="mailto:karthikeyar1811@gmail.com" className="text-[#B592F4] hover:text-black">
+                        <motion.a
+                            href="mailto:karthikeyar1811@gmail.com"
+                            className="text-[#B592F4] hover:text-black"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
                             karthikeyar1811@gmail.com
-
-                        </a>
+                        </motion.a>
                         <span className="text-gray-300">|</span>
-                        <a href="tel:+1234567890" className="text-[#B592F4] hover:text-black">
+                        <motion.a
+                            href="tel:+1234567890"
+                            className="text-[#B592F4] hover:text-black"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
                             +91 999999999
-                        </a>
+                        </motion.a>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Footer */}
@@ -141,4 +264,4 @@ const LandingPage = () => {
     );
 };
 
-export default LandingPage; 
+export default LandingPage;
