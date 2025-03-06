@@ -1,6 +1,6 @@
 
-Child Connect – Child Records Management App
-Child Connect is a secure and intuitive records management app designed for parents to organize their child's medical, school, and extracurricular records in one place. Built using React and Tailwind CSS, the app provides a seamless user experience with role-based access, authentication, and AI-powered insights.
+kiddoonect – Child Records Management App
+kiddoonect is a secure and intuitive records management app designed for parents to organize their child's medical, school, and extracurricular records in one place. Built using React and Tailwind CSS, the app provides a seamless user experience with role-based access, authentication, and AI-powered insights.
 
 ✨ Features
 🔐 Authentication & User Management
