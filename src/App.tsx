@@ -19,6 +19,7 @@ import MedicalRecords from "./pages/MedicalRecords";
 import Activities from "./pages/Activities";
 import Settings from "./pages/Settings";
 import LandingPage from "./pages/LandingPage";
+import AddChild from "./pages/Addchild";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/dashboard" element={<ParentDashboard />} />
             <Route path="/children" element={<ChildProfiles />} />
             <Route path="/children/:id" element={<ChildDetail />} />
+            <Route path="/add-child" element={<AddChild />} />
             <Route path="/medical-records" element={<MedicalRecords />} />
             <Route path="/activities" element={<Activities />} />
             <Route path="/settings" element={<Settings />} />

@@ -4,6 +4,7 @@ import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ChildProfiles = () => {
   // Mock data for children profiles
@@ -44,10 +45,13 @@ const ChildProfiles = () => {
               <p className="text-muted-foreground">
                 Manage and view your children's profiles
               </p>
+
             </div>
-            <Button className="flex items-center gap-2">
-              <PlusCircle size={16} />
-              <span>Add Child</span>
+            <Button className="flex items-center gap-2 px-6 py-3 text-lg">
+              <Link to="/add-child" className="flex items-center gap-2">
+                <PlusCircle size={20} />
+                <span>Add Child</span>
+              </Link>
             </Button>
           </div>
 
