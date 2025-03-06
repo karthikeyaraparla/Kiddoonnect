@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
@@ -22,6 +21,7 @@ import { toast } from "sonner";
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
+  phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: "Please enter a valid phone number" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
   confirmPassword: z.string(),
   userType: z.enum(["parent", "hospital"])
@@ -43,6 +43,7 @@ export function RegisterForm() {
     defaultValues: {
       name: "",
       email: "",
+      phoneNumber: "",
       password: "",
       confirmPassword: "",
       userType: "parent",
@@ -51,16 +52,21 @@ export function RegisterForm() {
 
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
-    
+
     try {
       // In a real app, we would register with a backend service here
       console.log("Registration data:", data);
-      
+
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success("Registration successful! Please sign in.");
-      navigate("/login");
+
+      // If it's a parent registration, redirect to OTP verification
+      if (data.userType === "parent") {
+        navigate("/verify-otp", { state: { email: data.email, phoneNumber: data.phoneNumber } });
+      } else {
+        toast.success("Registration successful! Please sign in.");
+        navigate("/login");
+      }
     } catch (error) {
       toast.error("Registration failed. Please try again.");
       console.error("Registration error:", error);
@@ -105,14 +111,14 @@ export function RegisterForm() {
                 </RadioGroup>
               </FormControl>
               <FormDescription>
-                {form.watch("userType") === "hospital" 
-                  ? "Hospital accounts require verification before being able to add records." 
+                {form.watch("userType") === "hospital"
+                  ? "Hospital accounts require verification before being able to add records."
                   : "Parent accounts can view and manage child profiles and records."}
               </FormDescription>
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="name"
@@ -120,16 +126,16 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>{form.watch("userType") === "hospital" ? "Hospital Name" : "Full Name"}</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder={form.watch("userType") === "hospital" ? "City General Hospital" : "Jane Doe"} 
-                  {...field} 
+                <Input
+                  placeholder={form.watch("userType") === "hospital" ? "City General Hospital" : "Jane Doe"}
+                  {...field}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="email"
@@ -139,11 +145,36 @@ export function RegisterForm() {
               <FormControl>
                 <Input placeholder="name@example.com" {...field} />
               </FormControl>
+              {form.watch("userType") === "parent" && (
+                <FormDescription>
+                  We'll send a verification code to this email
+                </FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
+        <FormField
+          control={form.control}
+          name="phoneNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Phone Number</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="+91 9999999999"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                We'll use this number for important notifications
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="password"
@@ -174,7 +205,7 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -205,7 +236,7 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        
+
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
@@ -216,7 +247,7 @@ export function RegisterForm() {
             "Create account"
           )}
         </Button>
-        
+
         <div className="text-center text-sm">
           Already have an account?{" "}
           <Link to="/login" className="text-primary hover:underline">

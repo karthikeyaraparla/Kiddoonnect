@@ -20,6 +20,7 @@ import Activities from "./pages/Activities";
 import Settings from "./pages/Settings";
 import LandingPage from "./pages/LandingPage";
 import AddChild from "./pages/Addchild";
+import VerifyOTP from "./pages/VerifyOTP";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Parent Routes */}
