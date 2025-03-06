@@ -1,4 +1,3 @@
-
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { PageTransition } from "@/components/layout/PageTransition";
@@ -8,7 +7,7 @@ const Login = () => {
     <PageTransition>
       <AuthLayout
         title="Welcome back"
-        subtitle="Sign in to your Child Connect account"
+        subtitle="Enter your credentials to access your account"
       >
         <LoginForm />
       </AuthLayout>

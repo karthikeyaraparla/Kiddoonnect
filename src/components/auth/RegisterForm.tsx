@@ -18,17 +18,25 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, { message: "Please enter a valid phone number" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  confirmPassword: z.string(),
-  userType: z.enum(["parent", "hospital"])
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const API_URL = "http://localhost:3000/api";
+
+const formSchema = z
+  .object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+    email: z.string().email({ message: "Please enter a valid email address" }),
+    phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, {
+      message: "Please enter a valid phone number",
+    }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z.string(),
+    userType: z.enum(["parent", "hospital"]),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -54,22 +62,35 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // In a real app, we would register with a backend service here
-      console.log("Registration data:", data);
-
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // If it's a parent registration, redirect to OTP verification
+      // Only handle parent registration for now
       if (data.userType === "parent") {
-        navigate("/verify-otp", { state: { email: data.email, phoneNumber: data.phoneNumber } });
-      } else {
-        toast.success("Registration successful! Please sign in.");
-        navigate("/login");
+        const response = await fetch(`${API_URL}/childSignup`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            phone: data.phoneNumber,
+            password: data.password,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          toast.success("Registration successful! Please verify your email.");
+          navigate("/verify-otp", {
+            state: { email: data.email },
+          });
+        } else {
+          toast.error(result.message || "Registration failed");
+        }
       }
     } catch (error) {
-      toast.error("Registration failed. Please try again.");
       console.error("Registration error:", error);
+      toast.error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +112,11 @@ export function RegisterForm() {
                   className="flex space-x-1"
                 >
                   <div className="flex items-center space-x-2 flex-1">
-                    <RadioGroupItem value="parent" id="parent" className="sr-only peer" />
+                    <RadioGroupItem
+                      value="parent"
+                      id="parent"
+                      className="sr-only peer"
+                    />
                     <label
                       htmlFor="parent"
                       className="flex flex-1 cursor-pointer items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -100,7 +125,11 @@ export function RegisterForm() {
                     </label>
                   </div>
                   <div className="flex items-center space-x-2 flex-1">
-                    <RadioGroupItem value="hospital" id="hospital" className="sr-only peer" />
+                    <RadioGroupItem
+                      value="hospital"
+                      id="hospital"
+                      className="sr-only peer"
+                    />
                     <label
                       htmlFor="hospital"
                       className="flex flex-1 cursor-pointer items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -124,10 +153,18 @@ export function RegisterForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{form.watch("userType") === "hospital" ? "Hospital Name" : "Full Name"}</FormLabel>
+              <FormLabel>
+                {form.watch("userType") === "hospital"
+                  ? "Hospital Name"
+                  : "Full Name"}
+              </FormLabel>
               <FormControl>
                 <Input
-                  placeholder={form.watch("userType") === "hospital" ? "City General Hospital" : "Jane Doe"}
+                  placeholder={
+                    form.watch("userType") === "hospital"
+                      ? "City General Hospital"
+                      : "Jane Doe"
+                  }
                   {...field}
                 />
               </FormControl>
@@ -162,10 +199,7 @@ export function RegisterForm() {
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="+91 9999999999"
-                  {...field}
-                />
+                <Input placeholder="+91 9999999999" {...field} />
               </FormControl>
               <FormDescription>
                 We'll use this number for important notifications

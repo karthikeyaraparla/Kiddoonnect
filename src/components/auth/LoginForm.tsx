@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
@@ -15,100 +14,64 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 
-const formSchema = z.object({
+const API_URL = "http://localhost:3000/api";
+
+const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  userType: z.enum(["parent", "hospital"])
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      userType: "parent"
     },
   });
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
-    
     try {
-      // In a real app, we would authenticate with a backend service here
-      console.log("Login attempt:", data);
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success("Login successful");
-      
-      // Redirect based on user type
-      if (data.userType === "parent") {
+      const response = await fetch(`${API_URL}/childSignin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", result.token);
+        localStorage.setItem("user", JSON.stringify(result.user));
+        toast.success("Signin successful!");
         navigate("/dashboard");
       } else {
-        navigate("/hospital-dashboard");
+        toast.error(result.message || "Signin failed");
       }
     } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
-      console.error("Login error:", error);
+      console.error("Signin error:", error);
+      toast.error("Signin failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="userType"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>I am a</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex space-x-1"
-                >
-                  <div className="flex items-center space-x-2 flex-1">
-                    <RadioGroupItem value="parent" id="parent" className="sr-only peer" />
-                    <label
-                      htmlFor="parent"
-                      className="flex flex-1 cursor-pointer items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      Parent
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2 flex-1">
-                    <RadioGroupItem value="hospital" id="hospital" className="sr-only peer" />
-                    <label
-                      htmlFor="hospital"
-                      className="flex flex-1 cursor-pointer items-center justify-center rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      Hospital
-                    </label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        
         <FormField
           control={form.control}
           name="email"
@@ -122,7 +85,7 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="password"
@@ -139,7 +102,7 @@ export function LoginForm() {
                   <button
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                    onClick={togglePasswordVisibility}
+                    onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
                       <EyeOff size={18} className="text-muted-foreground" />
@@ -149,31 +112,28 @@ export function LoginForm() {
                   </button>
                 </div>
               </FormControl>
-              <div className="flex justify-end">
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                  Forgot password?
-                </Link>
-              </div>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
+        <div className="flex items-center justify-end">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
+
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
-            </>
-          ) : (
-            "Sign in"
-          )}
+          {isLoading ? "Signing in..." : "Sign in"}
         </Button>
-        
+
         <div className="text-center text-sm">
           Don't have an account?{" "}
           <Link to="/register" className="text-primary hover:underline">
-            Create an account
+            Sign up
           </Link>
         </div>
       </form>
